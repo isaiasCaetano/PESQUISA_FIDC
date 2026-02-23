@@ -1,0 +1,10 @@
+﻿* {
+  margin: 0;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
