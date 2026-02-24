@@ -1,4 +1,4 @@
-﻿# TESTE_CODEX - Instrucoes Gerais
+﻿# Instrucoes Gerais
 
 ## Objetivo
 Aplicacao React para pesquisa de FIDC com:
@@ -14,7 +14,7 @@ Aplicacao React para pesquisa de FIDC com:
 - Servidor de busca ativo em `http://localhost:8000`
 
 ## Como executar
-1. Abra o terminal na pasta `C:\Users\isaias.nascimento_cr\Desktop\TESTE_CODEX`
+1. Abra o terminal na pasta `C:\Users\user_name\Desktop\TESTE_CODEX`
 2. Instale dependencias:
    - `npm install`
 3. Rode em desenvolvimento:

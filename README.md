@@ -1,6 +1,6 @@
 ﻿# PESQUISA_FIDC
 
-Aplicacao web em React para pesquisa de fundos FIDC, com filtros avancados, ordenacao de colunas, selecao de linhas e exportacao de resultados em XLSX.
+Aplicacao web em React para pesquisa de fundos FIDC, com filtros, ordenacao de colunas, selecao de linhas e exportacao de resultados em XLSX.
 
 ## Funcionalidades
 
