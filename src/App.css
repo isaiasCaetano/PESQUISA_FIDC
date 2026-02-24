@@ -69,6 +69,35 @@ input:focus {
   border-color: #848c97;
 }
 
+.logic-control {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.logic-control label {
+  font-size: 13px;
+  color: #d4dae2;
+}
+
+.logic-select {
+  min-width: 120px;
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--input-bg);
+  color: #e5e7eb;
+  padding: 0 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.logic-select:focus {
+  border-color: #848c97;
+}
+
 .actions {
   margin-top: 18px;
   display: flex;

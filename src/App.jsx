@@ -112,6 +112,7 @@ const matchesSituation = (item, selectedSituations) => {
 function App() {
   const [term, setTerm] = useState('')
   const [keywords, setKeywords] = useState([])
+  const [queryOperator, setQueryOperator] = useState('OR')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
@@ -312,7 +313,7 @@ function App() {
     setSelectedRows(new Set())
 
     try {
-      const termoBusca = keywords.join(' OR ')
+      const termoBusca = keywords.join(` ${queryOperator} `)
       const response = await fetch(
         `http://localhost:8000/pesquisar?termo=${encodeURIComponent(termoBusca)}`
       )
@@ -338,6 +339,7 @@ function App() {
   const handleClear = () => {
     setTerm('')
     setKeywords([])
+    setQueryOperator('OR')
     setResults([])
     setSearched(false)
     setSelectedInfo(INFO_OPTIONS.map((item) => item.key))
@@ -477,6 +479,19 @@ function App() {
             ))}
           </div>
         )}
+
+        <div className="logic-control">
+          <label htmlFor="logic-operator">Operador entre palavras-chave</label>
+          <select
+            id="logic-operator"
+            className="logic-select"
+            value={queryOperator}
+            onChange={(e) => setQueryOperator(e.target.value)}
+          >
+            <option value="OR">OR</option>
+            <option value="AND">AND</option>
+          </select>
+        </div>
 
         <div className="filters-block">
           <h2>Informacoes exibidas na tabela</h2>
