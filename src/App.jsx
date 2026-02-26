@@ -16,9 +16,13 @@ const INFO_OPTIONS = [
 ]
 
 const SITUATION_OPTIONS = [
-  { key: 'funcionamento', label: 'Fundo em funcionamento' },
-  { key: 'pre_operacional', label: 'Pre operacional' },
-  { key: 'desativado', label: 'Desativado' }
+  { key: 'funcionamento_normal', label: 'Em Funcionamento Normal' },
+  { key: 'situacao_especial', label: 'Em Situação Especial' },
+  { key: 'liquidacao', label: 'Em Liquidação' },
+  { key: 'pre_operacional', label: 'Fase Pré-Operacional' },
+  { key: 'incorporacao', label: 'Incorporação' },
+  { key: 'em_analise', label: 'Em Análise' },
+  { key: 'cancelado', label: 'Cancelado' }
 ]
 
 const DEFAULT_COLUMN_WIDTHS = {
@@ -88,8 +92,9 @@ const matchesSituation = (item, selectedSituations) => {
   const normalized = normalizeText(getSituationRaw(item))
 
   return selectedSituations.some((selection) => {
-    if (selection === 'funcionamento') {
+    if (selection === 'funcionamento_normal') {
       return (
+        normalized.includes('em funcionamento normal') ||
         normalized.includes('operacao normal') ||
         normalized.includes('funcionamento') ||
         normalized.includes('em operacao') ||
@@ -97,12 +102,29 @@ const matchesSituation = (item, selectedSituations) => {
       )
     }
 
+    if (selection === 'situacao_especial') {
+      return normalized.includes('situacao especial')
+    }
+
+    if (selection === 'liquidacao') {
+      return normalized.includes('liquidacao')
+    }
+
     if (selection === 'pre_operacional') {
       return normalized.includes('pre operacional') || normalized.includes('pre-operacional')
     }
 
-    if (selection === 'desativado') {
+    if (selection === 'incorporacao') {
+      return normalized.includes('incorporacao')
+    }
+
+    if (selection === 'em_analise') {
+      return normalized.includes('em analise') || normalized.includes('analise')
+    }
+
+    if (selection === 'cancelado') {
       return (
+        normalized.includes('cancelado') ||
         normalized.includes('desativado') ||
         normalized.includes('encerrado') ||
         normalized.includes('inativo')
