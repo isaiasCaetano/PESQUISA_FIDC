@@ -203,6 +203,19 @@ button:active {
   margin-bottom: 0;
 }
 
+.data-source-control {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.data-source-control label {
+  font-size: 13px;
+  color: #d4dae2;
+}
+
 .option-item {
   display: flex;
   align-items: center;

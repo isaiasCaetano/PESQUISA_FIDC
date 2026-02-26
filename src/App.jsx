@@ -2,6 +2,9 @@
 import * as XLSX from 'xlsx'
 import './App.css'
 
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+
 const INFO_OPTIONS = [
   { key: 'Cota_CVM', label: 'Classe de Cotas' },
   { key: 'Inicio do Fundo', label: 'Inicio do Fundo' },
@@ -109,10 +112,24 @@ const matchesSituation = (item, selectedSituations) => {
   })
 }
 
+const buildSupabaseSearchTerm = (words, operator) => {
+  const safeWords = words
+    .map((word) => String(word || '').replace(/"/g, ' ').trim())
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((word) => word.replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .map((word) => `"${word}"`)
+
+  if (safeWords.length === 0) return ''
+  return operator === 'AND' ? safeWords.join(' ') : safeWords.join(' OR ')
+}
+
 function App() {
   const [term, setTerm] = useState('')
   const [keywords, setKeywords] = useState([])
   const [queryOperator, setQueryOperator] = useState('OR')
+  const [dataSource, setDataSource] = useState('supabase')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
@@ -313,13 +330,50 @@ function App() {
     setSelectedRows(new Set())
 
     try {
-      const termoBusca = keywords.join(` ${queryOperator} `)
-      const response = await fetch(
-        `http://localhost:8000/pesquisar?termo=${encodeURIComponent(termoBusca)}`
-      )
+      const termoBuscaSqlite = keywords.join(` ${queryOperator} `)
+      const termoBuscaSupabase = buildSupabaseSearchTerm(keywords, queryOperator)
+      const fetchSupabase = async (termo, limite) =>
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/pesquisar_fundos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({
+            termo,
+            mes_ano_busca: 202512,
+            situacao_fundo: null,
+            limite
+          })
+        })
+
+      let response
+
+      if (dataSource === 'sqlite') {
+        response = await fetch(
+          `http://localhost:8000/pesquisar?termo=${encodeURIComponent(termoBuscaSqlite)}`
+        )
+      } else {
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+          throw new Error('Variaveis do Supabase nao configuradas.')
+        }
+
+        response = await fetchSupabase(termoBuscaSupabase, 20)
+
+        if (!response.ok && response.status === 500) {
+          const termoFallback = buildSupabaseSearchTerm(keywords.slice(0, 2), 'AND')
+          if (termoFallback) {
+            response = await fetchSupabase(termoFallback, 10)
+          }
+        }
+      }
 
       if (!response.ok) {
-        throw new Error('Erro na resposta do servidor.')
+        const errorBody = await response.text()
+        throw new Error(
+          `Erro na resposta da fonte selecionada (${response.status}): ${errorBody || 'sem detalhes'}`
+        )
       }
 
       const data = await response.json()
@@ -329,7 +383,12 @@ function App() {
       setResults(prepared)
     } catch (error) {
       console.error(error)
-      window.alert('Erro ao conectar com o servidor.')
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      window.alert(
+        dataSource === 'sqlite'
+          ? `Erro ao consultar o servidor SQLite em http://localhost:8000.\n\nDetalhe: ${errorMessage}`
+          : `Erro ao consultar o Supabase.\n\nDetalhe: ${errorMessage}`
+      )
       setResults([])
     } finally {
       setLoading(false)
@@ -526,6 +585,20 @@ function App() {
                 </label>
               )
             })}
+          </div>
+
+          <h2>Fonte de dados</h2>
+          <div className="data-source-control">
+            <label htmlFor="data-source-select">Selecionar fonte</label>
+            <select
+              id="data-source-select"
+              className="logic-select"
+              value={dataSource}
+              onChange={(e) => setDataSource(e.target.value)}
+            >
+              <option value="supabase">Supabase</option>
+              <option value="sqlite">SQLite (servidor local)</option>
+            </select>
           </div>
         </div>
 
