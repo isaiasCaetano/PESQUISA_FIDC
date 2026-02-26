@@ -4,6 +4,7 @@ import './App.css'
 
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const ENABLE_SQLITE = import.meta.env.VITE_ENABLE_SQLITE === 'true'
 
 const INFO_OPTIONS = [
   { key: 'Cota_CVM', label: 'Classe de Cotas' },
@@ -350,7 +351,7 @@ function App() {
 
       let response
 
-      if (dataSource === 'sqlite') {
+      if (ENABLE_SQLITE && dataSource === 'sqlite') {
         response = await fetch(
           `http://localhost:8000/pesquisar?termo=${encodeURIComponent(termoBuscaSqlite)}`
         )
@@ -587,19 +588,6 @@ function App() {
             })}
           </div>
 
-          <h2>Fonte de dados</h2>
-          <div className="data-source-control">
-            <label htmlFor="data-source-select">Selecionar fonte</label>
-            <select
-              id="data-source-select"
-              className="logic-select"
-              value={dataSource}
-              onChange={(e) => setDataSource(e.target.value)}
-            >
-              <option value="supabase">Supabase</option>
-              <option value="sqlite">SQLite (servidor local)</option>
-            </select>
-          </div>
         </div>
 
         {searched && (
