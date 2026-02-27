@@ -200,7 +200,18 @@ button:active {
 }
 
 .situation-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  width: 100%;
   margin-bottom: 0;
+}
+
+.situation-grid .option-item {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .data-source-control {
@@ -369,5 +380,19 @@ tbody tr:nth-child(even) {
   .results-head {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .situation-grid {
+    flex-wrap: wrap;
+  }
+
+  .situation-grid .option-item {
+    flex: 1 1 calc(50% - 10px);
+  }
+}
+
+@media (max-width: 640px) {
+  .situation-grid .option-item {
+    flex-basis: 100%;
   }
 }
